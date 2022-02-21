@@ -1,0 +1,34 @@
+version: "3"
+
+services:
+  db:
+    container_name: ddr_db
+    image: postgres:11.2
+    volumes:
+      - ddr_data_volume:/var/lib/postgresql/data
+  api:
+    container_name: ddr_api
+    build:
+      context: .
+      dockerfile: DockerfilePython
+    volumes:
+      - ./code/api:/code
+    tty: true
+    ports:
+      - 8000:8000
+    depends_on:
+      - db
+  front:
+    container_name: ddr_front
+    build:
+      context: .
+      dockerfile: DockerfileNode
+    volumes:
+      - ./code/front:/code
+    tty: true
+    ports:
+      - 3000:3000
+    depends_on:
+      - api
+volumes:
+  ddr_data_volume:
